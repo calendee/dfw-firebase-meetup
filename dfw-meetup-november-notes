@@ -1,0 +1,351 @@
+Justin Noel
+@calendee
+calendee.com
+
+
+=============================================================================================
+
+Sample Firebase : PUT_YOUR_FIREBASE_URL_HERE_WITH_TRAILING_SLASH
+
+
+PREVIOUS DEMO :
+Creating MVP Apps with Ionic and Firebase
+ http://www.meetup.com/AngularJS-DFW-Area/events/210562662/
+ https://www.youtube.com/watch?v=GL1GoDhK8PE
+
+
+var fb = new Firebase("PUT_YOUR_FIREBASE_URL_HERE_WITH_TRAILING_SLASH");
+
+fb.child('justin-entry').set({ ts : new Date().getTime(), text : 'Hello'})
+fb.child('justin-entry').set({ ts : new Date().getTime(), moreText : 'goodbye'})
+
+// Reset it
+fb.child('justin-entry').set({ ts : new Date().getTime(), text : 'Hello'})
+fb.child('justin-entry').update({ ts : new Date().getTime(), moreText : 'goodbye'})
+
+fb.child('attendees').push({ ts: Firebase.ServerValue.TIMESTAMP, givenName : 'Justin', familyName : 'Noel'})
+var added = fb.child('attendees').push({ ts: Firebase.ServerValue.TIMESTAMP, givenName : 'Marta'})
+// Get the key for the added entry
+added.key();
+
+// Get the entire path for the added entry
+var ref = added.toString()
+
+// Update the previously added entry
+added.update({familyName : 'Soncodi'})
+
+// Add a bunch of attendees - Zero based array
+fb.child('attendees').set(attendees)
+
+attendees.forEach( function(attendee) {
+	fb.child('attendees').push(attendee);
+})
+
+// Querying in bulk
+fb.child('attendees').on('child_added', function(snapshot) {
+	console.log(snapshot.val());
+})
+
+// Sorting
+fb.child('attendees').orderByChild('company').on('child_added', function(snapshot) {
+	console.log(snapshot.val());
+})
+
+// Limits
+fb.child('attendees').orderByChild('company').limitToLast(10).on('child_added', function(snapshot) {
+	console.log(snapshot.val());
+})
+
+fb.child('attendees').orderByChild('company').limitToFirst(10).on('child_added', function(snapshot) {
+	console.log(snapshot.val());
+})
+
+=============================================================================================
+
+
+// Speed test: Explain why so fast and then show for real
+var start = window.performance.now();
+var end;
+fb.child('attendees').orderByChild('givenname').limitToFirst(1).on('child_added', function(snapshot) {
+	console.log(snapshot.val());
+	end = window.performance.now();
+
+	console.log("Start : " + start);
+	console.log("End : " + end);
+	console.log("Elapsed : " + ( end - start));
+});
+
+=============================================================================================
+
+// Complex queries
+fb.child('attendees').orderByChild('company').startAt('R').limitToFirst(10).on('child_added', function(snapshot) {
+	console.log(snapshot.val());
+});
+
+
+// Strange ways
+var count = 0;
+fb.child('attendees').orderByChild('company').startAt('R').endAt('R~').on('child_added', function(snapshot) {
+	console.log(snapshot.val());
+	count++;
+	console.log("Records So Far : " + count);
+});
+
+=============================================================================================
+
+// On vs. Once
+Show how adding record right now will console.
+fb.child('attendees').once('child_added', function(snapshot) {
+	console.log(snapshot.val());
+})
+
+fb.child('enrollees').once('child_added', function(snapshot) {
+	console.log(snapshot.val());
+})
+
+=============================================================================================
+
+// Read Event Types
+fb.child('enrollees').on('value', function(snapshot) {
+	console.log("value Detected: ");
+    console.log(snapshot.val());
+})
+
+fb.child('enrollees').on('child_added', function(snapshot) {
+	console.log("child_added Detected: " + snapshot.val());
+})
+
+fb.child('enrollees').on('child_changed', function(snapshot) {
+	console.log("child_changed Detected: " + snapshot.val());
+    console.log(snapshot.val());
+})
+
+fb.child('enrollees').on('child_removed', function(snapshot) {
+	console.log("child_removed Detected: " + snapshot.val());
+})
+
+=============================================================================================
+
+
+AngularFire :
+http://localhost:8500/index-angular.html
+
+=============================================================================================
+
+// Rules
+change to :
+
+{
+    "rules": {
+        ".read": false,
+        ".write": false
+    }
+}
+
+// NOTE : does not work now
+fb.child('attendees').once('child_added', function(snapshot) {
+	console.log(snapshot.val());
+})
+
+=============================================================================================
+
+Change to
+
+{
+    "rules": {
+        ".read": true,
+        ".write": false
+    }
+}
+
+
+// NOTE : works
+fb.child('attendees').once('child_added', function(snapshot) {
+	console.log(snapshot.val());
+})
+
+Try to add :
+
+fb.child('justin-entry').set({ ts : new Date().getTime(), text : 'Hello'})
+NOTE : failure
+
+=============================================================================================
+
+WARNING : Authorization rules cascade and cannot be overwritten!!!! Once given, can't be revoked lower down.
+
+=============================================================================================
+Change rules to :
+
+{
+    "rules": {
+        ".read": false,
+        ".write": false,
+
+        "attendees" : {
+        	".read" : true
+        },
+
+        "enrollees" : {
+        	".write" : true,
+        	".read" : true
+        }
+    }
+}
+
+Show this fails: fb.child('justin-entry').set({ ts : new Date().getTime(), text : 'Hello'})
+Show this works : fb.child('enrollees').push({ ts : Firebase.ServerValue.TIMESTAMP, givenName : 'Justin'})
+
+
+=============================================================================================
+Validation:
+
+Change rules to :
+
+{
+    "rules": {
+        ".read": false,
+        ".write": false,
+
+        "attendees" : {
+        	".read" : true
+        },
+
+        "enrollees" : {
+
+        	"$id" : {
+
+	        	".write" : true,
+	        	".read" : true,
+
+        		".validate": "newData.hasChildren(['ts', 'givenName', 'familyName'])",
+
+        		"$other": { ".validate": false },
+
+        		"givenName" : {
+        			".validate" : "newData.isString() && newData.val().length > 1 && newData.val().length < 50"
+        		},
+
+        		"familyName" : {
+        			".validate" : "newData.isString() && newData.val().length > 1 && newData.val().length < 50"
+        		},
+
+        		"ts" : {
+        			".validate" : "newData.val() === now"
+        		}
+        	}
+        }
+    }
+}
+
+Show this fails : fb.child('enrollees').push({ ts : Firebase.ServerValue.TIMESTAMP, givenName : 'Justin'})
+Show this passes : fb.child('enrollees').push({ ts : Firebase.ServerValue.TIMESTAMP, givenName : 'Justin', familyName : 'Noel'})
+Show this fails : fb.child('enrollees').push({ ts : new Date().getTime(), givenName : 'Justin', familyName : 'Noel'})
+=============================================================================================
+
+Complex role based authentication:
+https://gist.github.com/sararob/331760829a9dcb4be3e7
+=============================================================================================
+
+https://github.com/firebase/firebase-work-queue/
+
+> cd desktop; git clone https://github.com/firebase/firebase-work-queue/
+> cd firebase-work-queue
+> npm install firebase
+
+Try :
+
+// Notice this fails
+> node generator.js
+
+change permssions to :
+
+{
+    "rules": {
+        ".read": false,
+        ".write": false,
+
+        "attendees" : {
+        	".read" : true
+        },
+
+        "enrollees" : {
+
+        	"$id" : {
+
+	        	".write" : true,
+	        	".read" : true,
+
+        		".validate": "newData.hasChildren(['ts', 'givenName', 'familyName'])",
+
+        		"$other": { ".validate": false },
+
+        		"givenName" : {
+        			".validate" : "newData.isString() && newData.val().length > 1 && newData.val().length < 50"
+        		},
+
+        		"familyName" : {
+        			".validate" : "newData.isString() && newData.val().length > 1 && newData.val().length < 50"
+        		},
+
+        		"ts" : {
+        			".validate" : "newData.val() === now"
+        		}
+        	}
+        },
+
+        "workqueue" : {
+        	".write" : true,
+        	".read" : true
+        }
+    }
+}
+> node generator.js
+> cd Desktop/firebase-work-queue/; node worker.js
+
+Watch in Forge and see how 2 workers keeps the queue empty.
+Change generator.js to 100ms.
+Watch how queue fills up
+Stop generator.js
+Add more workers and watch how queue is emptied quickly
+
+
+
+=============================================================================================
+Hosting
+
+Automatic SSL Provisioning
+
+> npm install -g firebase-tools
+> cd "/Users/jn/Dropbox/DFW Firebase Meetup/november-2014-app"
+> firebase init
+
+https://dfw-firebase.firebaseapp.com
+
+See the hosting tab for deployment history
+
+Note how a rules.json can be included in the hosting deploy to automatically apply to the entire firebase
+NOTE : Hosted domains canNOT be indexed by search engines at this time.
+
+
+=============================================================================================
+Gotchas :
+Transactions - Atomically modifies but does not lock.  So, someone else can write to it, then your transaction starts again with
+the new value.  Will keep trying until you have received data and updated it without anyone else changing the data in the interim.
+
+Offline caching - No way to limit the amount of cache.  It will keep caching until disk is full
+
+No Cold Starts : On JS clients, you can't have a cold start.  iOS with disk persitence has this feature.
+
+
+=============================================================================================
+=============================================================================================
+=============================================================================================
+=============================================================================================
+=============================================================================================
+
+
+// Alternatives
+http://www.baasbox.com/
+http://kinvey.com
+http://parse.com
+http://pubnub.com

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="meetup">
+<head>
+    <title>DFW Firebase</title>
+
+    <!-- Angular -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.2/angular.min.js"></script>
+
+    <!-- Firebase -->
+    <script src="https://cdn.firebase.com/js/client/2.0.4/firebase.js"></script>
+
+    <!-- AngularFire -->
+    <script src="https://cdn.firebase.com/libs/angularfire/0.9.0/angularfire.min.js"></script>
+    <script src="app.js"></script>
+
+    <link rel="styleSheet" href="ui-grid/ui-grid-unstable.css"/>
+    <script src="/ui-grid/ui-grid-unstable.js"></script>
+
+</head>
+<body>
+
+<div ng-controller="AttendeesController">
+    <h2>Attendees</h2>
+    <div ui-grid="{ data: attendees }" class="myGrid"></div>
+</div>
+
+<hr/>
+
+<div ng-controller="EnrolleesController">
+    <h2>Enrollees</h2>
+    <div ui-grid="{ data: enrollees }" class="myGrid"></div>
+</div>
+
+</body>
+</html>
