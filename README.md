@@ -20,7 +20,7 @@ Store data the way you are going to query it - not the way it is currently organ
 
 ## Querying
 
-Remember that our blank web site has an `fb` variable with a connection to our Firebase
+Remember that our [blank web site](https://dfw-firebase.firebaseapp.com/) has an `fb` variable with a connection to our Firebase
 
 - Get all records from a specific station
 
