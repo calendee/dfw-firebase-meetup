@@ -1,0 +1,162 @@
+Website : https://dfw-firebase.firebaseapp.com/
+
+Enable login with email and passwords via Forge
+
+
+Remember : "fb" is globally defined on our demo web page.
+
+#####################
+Create a user:
+
+fb.createUser({
+    email : "tester@testing.com",
+    password : "SomeCrazyPassword"
+}, function(error) {
+    if (error === null) {
+        console.log("User created successfully");
+    } else {
+        console.log("Error creating user:", error);
+    }
+});
+
+// The user is NOT logged in
+
+#####################
+Authenticate the user:
+
+fb.authWithPassword({
+    email : "tester@testing.com",
+    password : "SomeCrazyPassword"
+}, function(error, authData) {
+    if (error) {
+        console.log("Login Failed!", error);
+    } else {
+        console.log("Authenticated successfully with payload:", authData);
+    }
+});
+
+// Notice the password property in response : isTemporaryPassword - will become true is password gets reset
+
+// Notice the expiration.  Token expires in 24 hours by default.  Default can be changed in Forge OR can use "remember" option to makes session only
+
+
+###################################################
+// Show the default rules
+Default:
+{
+    "rules": {
+        ".read": true,
+        ".write": true
+    }
+}
+
+// Scary stuff.  Anyone can read and write anywhere
+fb.child('test').set('testing', function(result) { console.log(result)});
+fb.child('testing').child('more-testing').push({ 'total' : 0 }, function(result) { console.log(result)});
+
+
+###################################################
+// Creating a profile
+
+var user = fb.getAuth();
+
+// Can use the auth data to create structure
+fb.child('users').child(user.auth.uid).set({
+    email : 'tester@testing.com',
+    mobile : '5554441212'
+})
+
+// But ANYONE could have done that without being authenticated
+fb.child('users').child('simplelogin:50000').set({
+    email : 'tester@testing.com',
+    mobile : '5554441212'
+})
+
+// Use rules to ensure validity of user and data
+
+{
+    "rules": {
+        ".read": false,
+        ".write": false,
+
+        "users" : {
+            "$userId" : {
+                ".write" : "$userId === auth.uid && !data.exists() && newData.exists() && auth.uid !== 'anonymous'",
+            }
+        }
+    }
+}
+
+
+// This now fails:
+fb.child('users').child('simplelogin:50000').set({
+    email : 'tester@testing.com',
+    mobile : '5554441212'
+})
+
+// This looks like it might succeed but does not!  Why?
+fb.child('users').child(user.auth.uid).set({
+    email : 'tester@testing.com',
+    mobile : '5559991212'
+})
+
+
+// Demonstrate using the simulator to solve problems
+
+
+// But these rules are a little too loose.  User could write ANYTHING
+// Add some validation
+
+
+{
+    "rules": {
+        ".read": false,
+        ".write": false,
+
+        "users" : {
+            "$userId" : {
+
+                // Can only write if the node is the same name as the uid
+                // Can only write if the node does not already exist
+                // Cannot delete
+                ".write" : "$userId === auth.uid && !data.exists() && newData.exists() && auth.uid !== 'anonymous'",
+
+                // Can only read if the node is the same as the uid
+                ".read" : "$userId === auth.uid",
+
+                // Only allow these properties
+                ".validate": "newData.hasChildren(['mobile', 'email'])",
+
+                // no other properties can be included in a message
+                "$other": { ".validate": false },
+
+                "mobile" : {
+                    ".validate": "newData.isString() && newData.val().length < 21"
+                },
+
+                "email" : {
+                    ".validate": "newData.isString() && newData.val().length > 5 && newData.val().length < 100"
+                }
+            }
+        }
+    }
+}
+
+// Delete existing user and then try again:
+fb.child('users').child(user.auth.uid).set({
+    email : 'tester@testing.com',
+    mobile : '5559991212',
+    home : '444-333-1212'
+})
+
+// Now try:
+fb.child('users').child(user.auth.uid).set({
+    email : 'tester@testing.com',
+    mobile : '5559991212'
+})
+
+
+// Show Security API : https://www.firebase.com/docs/security/api/
+
+
+// Confirm mobile number not already in use:
