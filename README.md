@@ -7,6 +7,7 @@ Deep Dive - Querying / Retrieving Data
 Store data the way you are going to query it - not the way it is currently organized
 
 - [Avoid Nesting Data](https://www.firebase.com/docs/web/guide/structuring-data.html)
+- [Denormalizing Is Normal](https://www.firebase.com/blog/2013-04-12-denormalizing-is-normal.html)
 - Massive amounts of data is unusable in Firebase via Browser
 - Split data into logical groups that make sense for your QUERYING needs
 - Use summary tables
@@ -18,7 +19,7 @@ Store data the way you are going to query it - not the way it is currently organ
 - Do not assume all data is loaded remotely after script processes each data point
 - How to confirm remote data exists?
 
-## Querying
+## Querying stations with lumped reports
 
 Remember that our [blank web site](https://dfw-firebase.firebaseapp.com/) has an `fb` variable with a connection to our Firebase
 
@@ -97,3 +98,22 @@ fb.child('weather/tx/TX-BEL-1').orderByChild('date').startAt('2014-12-01').endAt
 })
 
 ```
+
+## Value vs. Child_Added
+
+- Querying by Value
+
+fb.child('weather-by-month/tx/TX-AC-3/reports/2014').on('value', function(snapshot) {
+	var records = snapshot.val();
+	console.log(snapshot.key());
+	console.table(records)
+});
+
+
+- Querying by child_added
+
+fb.child('weather-by-month/tx/TX-AC-3/reports/2014').on('child_added', function(snapshot) {
+   var records = snapshot.val();
+	console.log(snapshot.key());
+   console.table(records);
+});

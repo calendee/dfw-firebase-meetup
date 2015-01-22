@@ -55,6 +55,7 @@ console.log("All reports processed in " + ( (Date.now() - startTime) / 1000) + "
 
 function reportCompleted() {
 
+    reportCounter++;
     if(counter%1000 === 0 ) console.log(counter + " records uploaded in " + ( (Date.now() - startTime) / 1000) + " seconds");
 
     if(reportCounter === counter) {
