@@ -20,7 +20,7 @@ angular.module("dfwFb", ["ionic", "dfwFb", "firebase"])
             .state("app", {
                 url: "/app",
                 abstract: true,
-                templateUrl: "templates/menu.html",
+                templateUrl: "/templates/menu.html",
                 controller: "AppController as aCtrl"
             })
 
@@ -28,7 +28,7 @@ angular.module("dfwFb", ["ionic", "dfwFb", "firebase"])
                 url: "/chatrooms",
                 views: {
                     "menuContent": {
-                        templateUrl: "templates/chatrooms.html",
+                        templateUrl: "/templates/chatrooms.html",
                         controller: "ChatRoomsController as crCtrl"
                     }
                 }
@@ -38,7 +38,7 @@ angular.module("dfwFb", ["ionic", "dfwFb", "firebase"])
                 url: "/room/:roomId",
                 views: {
                     "menuContent": {
-                        templateUrl: "templates/room.html",
+                        templateUrl: "/templates/room.html",
                         controller: "RoomController as rCtrl"
                     }
                 }
@@ -46,5 +46,12 @@ angular.module("dfwFb", ["ionic", "dfwFb", "firebase"])
 
         // if none of the above states are matched, use this as the fallback
 
-        $urlRouterProvider.otherwise("/app/chatrooms");
+
+        // Prevent infinite digest with ui-router
+        // https://github.com/angular-ui/ui-router/issues/600#issuecomment-47228922
+        $urlRouterProvider.otherwise(
+            function($injector) {
+                var $state = $injector.get("$state");
+                $state.go("app.chatrooms");
+            });
     });

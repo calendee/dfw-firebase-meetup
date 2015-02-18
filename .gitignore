@@ -3,3 +3,5 @@ node_modules
 hooks
 plugins
 
+public/2015-02-chat/www/.divshot-cache
+public/2015-02-chat/www/divshot.json

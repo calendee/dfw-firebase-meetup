@@ -1,4 +1,4 @@
-angular.module('dfwFb').factory('FbService', ["$firebase", function($firebase) {
+angular.module('dfwFb').factory('FbService', ["$rootScope", "$timeout", "$firebase", function($rootScope, $timeout, $firebase) {
 
     var ref = new Firebase("https://dfw-firebase.firebaseio.com/");
 

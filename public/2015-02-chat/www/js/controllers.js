@@ -8,15 +8,19 @@ angular.module("dfwFb")
 
         function auth(service) {
 
-            console.log("Authing with " + service);
             FbService.fbRef.authWithOAuthPopup(service, function(error, authData) {
                 if (error) {
                     console.log("Login Failed!", error);
                 } else {
                     console.log("Authenticated successfully with payload:", authData);
+                    $scope.modal.hide();
                 }
             });
         }
+
+        $scope.$on("forceLogin" , function() {
+            $scope.login();
+        });
 
         // Create the login modal that we will use later
         $ionicModal.fromTemplateUrl("templates/login.html", {
@@ -24,11 +28,6 @@ angular.module("dfwFb")
         }).then(function(modal) {
                 $scope.modal = modal;
             });
-
-        // Triggered in the login modal to close it
-        $scope.closeLogin = function() {
-            $scope.modal.hide();
-        };
 
         // Open the login modal
         $scope.login = function() {
@@ -38,12 +37,32 @@ angular.module("dfwFb")
 
     }])
 
-    .controller("ChatRoomsController", ["$scope", "$firebase", "FbService", function($scope, $firebase, FbService) {
-
-        var sync = $firebase( FbService.fbRef.child("dfwChat").child("rooms") );
+    .controller("ChatRoomsController", ["$rootScope", "$scope", "$timeout", "$firebase", "FbService", function($rootScope, $scope, $timeout, $firebase, FbService) {
 
         var vm = this;
-        vm.chatRooms = sync.$asArray();
+        vm.chatRooms = [];
+
+        // Register the callback to be fired every time auth state changes
+        FbService.fbRef.onAuth(authDataCallback);
+
+        // Create a callback which logs the current auth state
+        function authDataCallback(authData) {
+            if (authData) {
+
+                console.log("User " + authData.uid + " is logged in with " + authData.provider);
+                var sync = $firebase( FbService.fbRef.child("dfwChat").child("rooms") );
+                vm.chatRooms = sync.$asArray();
+
+
+            } else {
+                console.log("User is logged out");
+
+                $timeout(function() {
+                    $rootScope.$broadcast('forceLogin')
+                }, 500);
+
+            }
+        }
 
     }])
 
@@ -71,7 +90,7 @@ angular.module("dfwFb")
             console.log("Adding msg: " + vm.msg);
             vm.msgs.$add({
                 msg : vm.msg,
-                userName : "justin",
+                userName : FbService.fbRef.getAuth().uid,
                 ts : Firebase.ServerValue.TIMESTAMP
             });
             vm.msg = '';

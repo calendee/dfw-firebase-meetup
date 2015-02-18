@@ -7,8 +7,6 @@ Third Party Authentication with Firebase
 - [User Authentication](https://www.firebase.com/docs/web/guide/user-auth.html)
 - [Authentication Sample](http://jsfiddle.net/firebase/a221m6pb/embedded/result,js/)
 - [GitHub Authentication](https://www.firebase.com/docs/web/guide/login/github.html)
-- [DFW Firebase](https://dfw-firebase.firebaseio.com/)
-- [DFW Firebase Website](https://dfw-firebase.firebaseapp.com/)
 
 ## Setup Steps
 
@@ -22,3 +20,4 @@ Third Party Authentication with Firebase
 - Be sure to configure the sessions duration
 ![](https://www.evernote.com/shard/s246/sh/7769ad68-b718-49ee-bfc4-a3ccba3cbb83/bb38f0ccb74a317b2af4c67d947aad00/deep/0/auth-in-firebase.png)
 
+[Sample Chat App](https://development.dfw-firebase-chat.divshot.io)
