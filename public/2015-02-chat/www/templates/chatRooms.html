@@ -1,0 +1,9 @@
+<ion-view view-title="Chat Rooms">
+    <ion-content>
+        <ion-list>
+            <ion-item ng-repeat="room in crCtrl.chatRooms" ui-sref="app.room({ roomId : room.$id})">
+                {{room.name}}
+            </ion-item>
+        </ion-list>
+    </ion-content>
+</ion-view>

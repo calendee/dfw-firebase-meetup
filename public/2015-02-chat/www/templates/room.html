@@ -1,0 +1,33 @@
+<ion-view>
+
+    <ion-nav-title>
+        {{rCtrl.title}}
+    </ion-nav-title>
+
+    <ion-content>
+
+        <div class="list">
+
+            <div class="item" ng-repeat="msg in rCtrl.msgs">
+                {{msg.userName}} : {{msg.msg}}
+            </div>
+        </div>
+
+    </ion-content>
+
+    <div ng-if="rCtrl.showFooter">
+        <form name="sendTextMessage" ng-submit="rCtrl.sendMessage()">
+
+            <ion-footer-bar align-title="left" keyboard-attach class="bar-balanced item-input-inset">
+                <picture-manager send-msg="rCtrl.sendMessage()"></picture-manager>
+                <label class="item-input-wrapper">
+                    <input type="text" name="msgToSend" ng-model="rCtrl.msg" placeholder="Join the Conversation" required ng-minlength="1" ng-maxlength="160" char-limit="160">
+                </label>
+                <button class="button button-clear button-send" ng-disabled="sendTextMessage.$invalid">
+                    Send
+                </button>
+            </ion-footer-bar>
+
+        </form>
+    </div>
+</ion-view>
