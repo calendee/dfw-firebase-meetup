@@ -21,3 +21,6 @@ Third Party Authentication with Firebase
 ![](https://www.evernote.com/shard/s246/sh/7769ad68-b718-49ee-bfc4-a3ccba3cbb83/bb38f0ccb74a317b2af4c67d947aad00/deep/0/auth-in-firebase.png)
 
 [Sample Chat App](http://development.dfw-firebase-chat.divshot.io)
+
+## Firebase Tutorials
+[TaskRabbit Clone](https://code4startup.com/projects/ninja-learn-angularjs-firebase-by-cloning-udemy)
