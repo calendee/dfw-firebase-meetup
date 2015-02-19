@@ -23,5 +23,5 @@ Third Party Authentication with Firebase
 [Sample Chat App](http://development.dfw-firebase-chat.divshot.io)
 
 ## Firebase Tutorials
-[Angular Course](https://www.angularcourse.com/) - Learn Angular and Firebase for $99!  Very good course!
-[TaskRabbit Clone](https://code4startup.com/projects/ninja-learn-angularjs-firebase-by-cloning-udemy)
+- [Angular Course](https://www.angularcourse.com/) - Learn Angular and Firebase for $99!  Very good course!
+- [TaskRabbit Clone](https://code4startup.com/projects/ninja-learn-angularjs-firebase-by-cloning-udemy)
