@@ -1,0 +1,19 @@
+{
+  "name": "dfwFirebasePhotoShare",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^0.9.0",
+    "firebase": "^2.2.4",
+    "firelease": "^0.2.16",
+    "lwip": "^0.0.6",
+    "nodefire": "^0.3.5",
+    "q": "^1.2.0"
+  }
+}
