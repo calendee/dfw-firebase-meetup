@@ -1,0 +1,25 @@
+{
+  "process_blur": {
+    "start_state" : "start_image_processing",
+    "in_progress_state": "process_blur_in_progress",
+    "finished_state": "process_blur_finished",
+    "timeout": 10000
+  },
+  "process_flip": {
+    "start_state" : "process_blur_finished",
+    "in_progress_state": "process_flip_in_progress",
+    "finished_state": "process_flip_finished",
+    "timeout": 10000
+  },
+  "process_rotate": {
+    "start_state" : "process_flip_finished",
+    "in_progress_state": "process_rotate_in_progress",
+    "finished_state": "process_rotate_finished",
+    "timeout": 10000
+  },
+  "process_save": {
+    "start_state" : "process_rotate_finished",
+    "in_progress_state": "process_save_in_progress",
+    "timeout": 10000
+  }
+}
