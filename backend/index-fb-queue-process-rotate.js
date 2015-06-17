@@ -14,15 +14,19 @@ var processTask = new Queue(queueRef, options, function(data, progress, resolve,
 
   console.log(options.specId + " has data!");
   
-  ImageProcessor.processeImage(data.img, 'rotate', function(err, finalImage) {
-    
-    if(err) {
-      reject(err)
-    } else {
-      data.img = finalImage;
-      resolve(data);
+  if(data.rotate) {
+    ImageProcessor.processeImage(data.img, 'rotate', function(err, finalImage) {
       
-    }
-  });
+      if(err) {
+        reject(err)
+      } else {
+        data.img = finalImage;
+        resolve(data);
+        
+      }
+    });
+  } else {
+    resolve(data);
+  }
   
 });

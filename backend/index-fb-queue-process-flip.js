@@ -14,15 +14,18 @@ var processTask = new Queue(queueRef, options, function(data, progress, resolve,
 
   console.log(options.specId + " has data!");
   
-  ImageProcessor.processeImage(data.img, 'border', function(err, finalImage) {
-    
-    if(err) {
-      reject(err)
-    } else {
-      data.img = finalImage;
-      resolve(data);
-    }
-  });
-  
+  if(data.flip) {
+    ImageProcessor.processeImage(data.img, 'border', function(err, finalImage) {
+      
+      if(err) {
+        reject(err)
+      } else {
+        data.img = finalImage;
+        resolve(data);
+      }
+    });
+  } else {
+    resolve(data);
+  }
   
 });

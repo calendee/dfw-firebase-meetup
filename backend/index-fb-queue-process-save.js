@@ -18,7 +18,6 @@ var processTask = new Queue(queueRef, options, function(data, progress, resolve,
   
   ref.child('my-photos').child(data.uid).push(data, function(err) {
     console.log("Saved data");
-    console.log(err);
     resolve(data);
   }) 
   

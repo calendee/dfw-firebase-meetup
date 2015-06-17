@@ -13,14 +13,19 @@ var options = {
 var processTask = new Queue(queueRef, options, function(data, progress, resolve, reject) {
 
   console.log(options.specId + " has data!");
-  ImageProcessor.processeImage(data.img, 'blur', function(err, finalImage) {
-    
-    if(err) {
-      reject(err)
-    } else {
-      data.img = finalImage;
-      resolve(data);
-    }
-  });
+  
+  if(data.blur) {
+    ImageProcessor.processeImage(data.img, 'blur', function(err, finalImage) {
+      
+      if(err) {
+        reject(err)
+      } else {
+        data.img = finalImage;
+        resolve(data);
+      }
+    });
+  } else {
+    resolve(data);
+  }
   
 });
