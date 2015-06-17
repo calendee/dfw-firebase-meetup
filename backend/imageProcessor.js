@@ -1,14 +1,33 @@
 var Lwip    = require('lwip');
 var Async   = require('async');
 
-function scaleImage(image, ratio, mainCallback) {
+function rotateIage(image, degrees, mainCallback) {
 
-    image.scale(ratio, function(err, image) {
+    image.rotate(degrees, function(err, image) {
         if(err) return mainCallback(err);
         mainCallback(null, image);
     });
 
 }
+
+function borderImage(image, width, color, mainCallback) {
+
+    image.border(width, color, function(err, image) {
+        if(err) return mainCallback(err);
+        mainCallback(null, image);
+    });
+
+}
+
+function blurImage(image, sigma, mainCallback) {
+
+    image.blur(sigma, function(err, image) {
+        if(err) return mainCallback(err);
+        mainCallback(null, image);
+    });
+
+}
+
 
 function bufferImage(image, format, mainCallback) {
 
@@ -29,15 +48,15 @@ function openImage(buffer, mainCallback) {
 }
 
 /**
- * Generate a smaller image
+ * Process an image
  * @param details
  * @param mainCallback
  */
-function generateScaledImage(imageData, mainCallback) {
+exports.processeImage = function(imageData, process, mainCallback) {
 
     var imgBuffer = new Buffer(imageData, 'base64');
     var lwipImage;
-    var smallImage;
+    var finalImage;
 
     Async.series([
 
@@ -46,52 +65,55 @@ function generateScaledImage(imageData, mainCallback) {
             openImage(imgBuffer, function(err, image) {
                 if(err) return callback(err);
                 lwipImage = image;
-
                 callback();
             });
         },
 
         function(callback) {
 
-            scaleImage(lwipImage, 0.25, function(err, image) {
-                if(err) return callback(err);
-                lwipImage = image;
+            switch(process) {
+                case 'rotate':
 
-                callback();
-            });
+                    rotateIage(lwipImage, 180, function(err, image) {
+                        if(err) return callback(err);
+                        lwipImage = image;
+                        callback();
+                    });
+                
+                    break;
+                case 'border':
+                    borderImage(lwipImage, 40, 'black', function(err, image) {
+                        if(err) return callback(err);
+                        lwipImage = image;
+                        callback();
+                    });
+                    break;
+                
+                case 'blur':
+                    blurImage(lwipImage, 5.00, function(err, image) {
+                        if(err) return callback(err);
+                        lwipImage = image;
+                        callback();
+                    });
+                    break;
+                
+                default:
+                callback('no valid process available');
+            }
         },
 
         function(callback) {
 
             bufferImage(lwipImage, 'jpg', function(err, buffer) {
                 if(err) return callback(err);
-                smallImage = buffer;
-
+                finalImage = buffer.toString('base64');
                 callback();
             });
         }
 
 
     ], function(err) {
-        mainCallback(err, smallImage);
+        mainCallback(err, finalImage);
     });
-
-}
-
-exports.processImage = function(imageData, callback) {
-
-    try{
-
-        generateScaledImage(imageData, function(err, scaledImage) {
-            callback(err, scaledImage.toString('base64'));
-        });
-
-
-    } catch(e) {
-        console.warn("imageProcessor Exception");
-        console.warn(e);
-        console.warn(e.stack)
-        exportCallback("imageProcessor Exception");
-    }
 
 };
